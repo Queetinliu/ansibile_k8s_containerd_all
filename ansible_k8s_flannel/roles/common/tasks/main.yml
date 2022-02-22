@@ -1,0 +1,136 @@
+---
+- name: remove kernel tools
+  yum:
+    name: kernel-tools-3.10.0
+    state: absent
+
+- include_tasks: checkinternet.yml
+
+- name: install new 4.4.138 kernel without internet
+  yum:
+    name: kernel-lt-4.4.138
+    state: present
+  async: 900
+  poll: 0 
+  register: newkernel
+  when: internetrc != "0"
+
+- name: copy elrepo 
+  copy:
+    src: files/elrepo.repo
+    dest: /etc/yum.repos.d/elrepo.repo
+  when: internetrc == "0"
+
+#- name: install elrepo
+#  yum:
+#    name: https://www.elrepo.org/elrepo-release-7.el7.elrepo.noarch.rpm
+#    state: present
+#  when: internetrc == "0"
+#
+#- name: replace elrepo to tsinghua
+#  replace:
+#    path: /etc/yum.repos.d/elrepo.repo
+#    regexp: "{{ item.regexp }}"
+#    replace: "{{ item.replace }}"
+#    backup: yes
+#  when: internetrc == "0"
+#  loop:
+#    - {regexp: '^mirrorlist=', replace: '#mirrorlist'}
+#    - {regexp: 'http://elrepo.org/linux', replace: 'http://mirrors.tuna.tsinghua.edu.cn/elrepo'}
+
+- name: install lt kernel version with internet
+  yum:
+    name: kernel-lt
+    state: present
+    enablerepo: elrepo-kernel
+    update_cache: yes
+  async: 900
+  poll: 0 
+  register: newltkernel
+  when: internetrc == "0"
+    
+- name: Set a hostname
+  hostname: name={{ hostname }}
+  tags: set hostname
+
+- name: update /etc/hosts file
+  blockinfile:
+    dest: /etc/hosts
+    content: "{{ lookup('template', 'templates/hosts2.j2') }}"
+    state: present
+  tags: modify hosts
+
+- name: stop & disable firewalld
+  systemd:
+    name: firewalld.service
+    state: stopped
+    enabled: no
+  tags: stop firewalld
+   
+- name: clear iptables
+  iptables:
+    flush: yes
+
+- name: swap off
+  shell: swapoff -a && sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab 
+  tags: swap off
+ 
+- name: disable selinux
+  selinux:
+    state: disabled
+  tags: disable selinux
+  
+#- name: modify sysctl
+#  get_url:
+#    url: "{{ httpurl }}/{{ ansible_role_name }}/kubernetes.conf"
+#    dest: /etc/sysctl.d/kubernetes.conf
+#
+- name: modify sysctl
+  copy:
+    src: files/kubernetes.conf
+    dest: /etc/sysctl.d/kubernetes.conf
+#  #notify:
+#  #  - name: reboot machine
+#  tags: modify sysctl
+
+- name: set timezone
+  timezone:
+    name: Asia/Shanghai
+
+- name: debug newkernel
+  debug:
+    msg: "{{ newkernel  }}"
+
+- name: get task status of newkernel
+  async_status:
+    jid: "{{ newkernel.ansible_job_id }}"
+  register: result
+  until: result.finished
+  delay: 5
+  retries: 30
+  when: internetrc != "0"
+
+- name: get task status of newltkernel
+  async_status:
+    jid: "{{ newltkernel.ansible_job_id }}"
+  register: result
+  until: result.finished
+  delay: 5
+  retries: 60
+  when: internetrc == "0"
+
+- name: install chrony
+  yum:
+    name: chrony
+    state: present
+
+- name: copy chrony conf
+  template:
+    src: ../templates/chrony.conf.j2
+    dest: /etc/chrony.conf
+  notify:
+    - restart chronyd
+
+- name: set to new kernel
+  shell: grub2-set-default 0
+

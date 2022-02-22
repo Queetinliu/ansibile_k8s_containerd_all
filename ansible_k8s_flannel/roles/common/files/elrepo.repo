@@ -1,0 +1,38 @@
+### Name: ELRepo.org Community Enterprise Linux Repository for el7
+### URL: https://elrepo.org/
+
+[elrepo]
+name=ELRepo.org Community Enterprise Linux Repository - el7222
+baseurl=http://192.168.0.220:38081/repository/yum-group/elrepo/el7/$basearch/
+#mirrorlisthttp://mirrors.elrepo.org/mirrors-elrepo.el7
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-elrepo.org
+protect=0
+
+[elrepo-testing]
+name=ELRepo.org Community Enterprise Linux Testing Repository - el7
+baseurl=http://192.168.0.220:38081/repository/yum-group/testing/el7/$basearch/
+#mirrorlisthttp://mirrors.elrepo.org/mirrors-elrepo-testing.el7
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-elrepo.org
+protect=0
+
+[elrepo-kernel]
+name=ELRepo.org Community Enterprise Linux Kernel Repository - el7
+baseurl=http://192.168.0.220:38081/repository/yum-group/kernel/el7/$basearch/
+#mirrorlisthttp://mirrors.elrepo.org/mirrors-elrepo-kernel.el7
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-elrepo.org
+protect=0
+
+[elrepo-extras]
+name=ELRepo.org Community Enterprise Linux Extras Repository - el7
+baseurl=http://192.168.0.220:38081/repository/yum-group/$basearch/
+#mirrorlisthttp://mirrors.elrepo.org/mirrors-elrepo-extras.el7
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-elrepo.org
+protect=0
