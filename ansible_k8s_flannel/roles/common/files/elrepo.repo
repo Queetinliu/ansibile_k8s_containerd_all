@@ -6,7 +6,7 @@ name=ELRepo.org Community Enterprise Linux Repository - el7222
 baseurl=http://192.168.0.220:38081/repository/yum-group/elrepo/el7/$basearch/
 #mirrorlisthttp://mirrors.elrepo.org/mirrors-elrepo.el7
 enabled=1
-gpgcheck=1
+gpgcheck=0
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-elrepo.org
 protect=0
 
@@ -23,8 +23,8 @@ protect=0
 name=ELRepo.org Community Enterprise Linux Kernel Repository - el7
 baseurl=http://192.168.0.220:38081/repository/yum-group/kernel/el7/$basearch/
 #mirrorlisthttp://mirrors.elrepo.org/mirrors-elrepo-kernel.el7
-enabled=0
-gpgcheck=1
+enabled=1
+gpgcheck=0
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-elrepo.org
 protect=0
 
