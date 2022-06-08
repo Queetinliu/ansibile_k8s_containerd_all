@@ -1,0 +1,3 @@
+# ansibile_k8s_containerd_all
+需要在相同目录下准备baserpms和globalrpms，以及k8s的二进制文件。
+baserpms主要是安装主机的ansible,sshpass等，globalrpms则是全局的ntp,chrony等
