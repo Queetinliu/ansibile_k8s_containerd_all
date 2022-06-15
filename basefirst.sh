@@ -27,7 +27,7 @@ systemctl enable httpd
 else
 set -e
  if [[ $result == "" ]];then
-   #yum install -y epel-release
+   yum install -y epel-release
    yum install -y httpd vim sshpass ansible createrepo nfs-utils ntfs-3g ntfsprogs pciutils
  fi
 fi
